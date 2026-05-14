@@ -81,15 +81,49 @@ function crossingSegment(a: { x: number, y: number }, b: { x: number, y: number 
     };
 }
 
+function iconOffset(index: number) {
+    const count = icons.value.length;
+
+    if (count === 1) {
+        return { x: 0, y: 0 };
+    }
+
+    if (count === 2) {
+        const spacing = 24;
+
+        return {
+            x: 0,
+            y: index === 0
+                ? -spacing / 2
+                : spacing / 2
+        };
+    }
+
+    // 3 icons
+    if (count === 3) {
+        const spacing = 16;
+        const positions = [
+            { x: 0, y: -spacing },        // top
+            { x: -spacing, y: spacing / 2 }, // bottom-left
+            { x: spacing, y: spacing / 2 },  // bottom-right
+        ];
+
+        return positions[index];
+    }
+
+    return { x: 0, y: 0 };
+}
+
 function iconTransform(index: number): string {
-    const spacing = 18;
-    const totalHeight = (icons.value.length - 1) * spacing;
-    const offsetY = index * spacing - totalHeight / 2;
+    const offset = iconOffset(index);
 
     return `
-        translate(${center.value.x}, ${center.value.y + offsetY})
-        scale(0.8)
-        translate(-12, -12)
+        translate(
+            ${center.value.x + offset.x},
+            ${center.value.y + offset.y}
+        )
+        scale(0.7)
+        translate(-24, -24)
     `;
 }
 
@@ -174,7 +208,8 @@ const icons = computed(() => {
         props.tile.type == 'rest' ? 'circle' : null,
         props.tile.hasKey ? 'key' : null,
         props.tile.hasBox ? 'box' : null,
-    ].filter(el => el);
+        !['deposit', 'rest'].includes(props.tile.type) ? 'dump' : null
+    ].filter(el => el !== null);
 });
 
 const colorMap = {
@@ -255,31 +290,50 @@ const fillColor = computed(() => {
             :stroke-width="1"
         >
             <template v-if="icon === 'key'">
-                <path
-                    d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
-                />
+                <g transform="translate(12,12)">
+                    <path
+                        d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
+                    />
 
-                <circle
-                    cx="16.5"
-                    cy="7.5"
-                    r=".5"
-                />
+                    <circle
+                        cx="16.5"
+                        cy="7.5"
+                        r=".5"
+                    />
+                </g>
             </template>
 
             <template v-if="icon === 'box'">
-                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                <g transform="translate(12,12)">
+                    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
 
-                <path d="m3.3 7 8.7 5 8.7-5"/>
+                    <path d="m3.3 7 8.7 5 8.7-5"/>
 
-                <path d="M12 22V12"/>
+                    <path d="M12 22V12"/>
+                </g>
             </template>
 
             <template v-if="icon === 'square'">
-                <rect width="18" height="18" x="3" y="3" rx="2"/>
+                <rect width="40" height="40" x="4" y="4" rx="4"/>
             </template>
 
             <template v-if="icon === 'circle'">
-                <circle cx="12" cy="12" r="10"/>
+                <circle cx="24" cy="24" r="20"/>
+            </template>
+
+            <template v-if="icon === 'dump'">
+                <text
+                    x="24"
+                    y="24"
+                    text-anchor="middle"
+                    dominant-baseline="middle"
+                    font-size="24"
+                    fill="black"
+                    stroke="none"
+                    font-weight="bold"
+                >
+                    {{ tile.dump }}
+                </text>
             </template>
         </g>
     </g>

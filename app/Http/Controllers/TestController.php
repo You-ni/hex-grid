@@ -42,6 +42,7 @@ class TestController extends Controller
                     'r' => $r,
                     'ls' => $hex->security_level,
                     'type' => $hex->type,
+                    'dump' => $hex->dump,
                     'hasKey' => $hex->has_key,
                     'hasBox' => $hex->has_box,
                     'generated' => $hex->generated,
@@ -60,10 +61,11 @@ class TestController extends Controller
                 $hex->fill([
                     'security_level' => null,
                     'type' => null,
+                    'dump' => null,
+                    'has_key' => false,
+                    'has_box' => false,
                     'generated' => false,
                     'resolved' => false,
-                    'has_key' => false,
-                    'has_box' => false
                 ]);
                 $hex->save();
             });
@@ -92,9 +94,11 @@ class TestController extends Controller
             ->random(4)
             ->each(function(Hex $hex){
                 $hex->fill([
+                    'security_level' => collect([1, 2, 3])->random(),
                     'type' => collect(['combat', 'ability', 'sociality'])->random(),
+                    'dump' => fake()->numberBetween(1, 21),
                     'generated' => true,
-                    'resolved' => true
+                    'resolved' => true,
                 ]);
                 $hex->save();
             });
@@ -125,10 +129,11 @@ class TestController extends Controller
                 $adjacent->fill([
                     'security_level' => $ls,
                     'type' => $type,
+                    'dump' => fake()->numberBetween(1, 21),
+                    'has_key' => $type !== 'rest' && fake()->boolean(20),
+                    'has_box' => $type !== 'rest' && fake()->boolean(80),
                     'generated' => true,
                     'resolved' => $resolved,
-                    'has_key' => !$resolved && $type !== 'rest' && fake()->boolean(20),
-                    'has_box' => !$resolved && $type !== 'rest' && fake()->boolean(80)
                 ]);
                 $adjacent->save();
 
