@@ -1,0 +1,37 @@
+name: ${CONTAINER_NAME}
+services:
+  application:
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "2"
+    restart: ${CONTAINER_RESTART:-always}
+    image: txddocker/prod-nginx-php84:slim
+    container_name: ${CONTAINER_NAME}
+    # ports:
+    #   - "8080:80"
+    networks:
+      - prod_net_rproxy
+    volumes:
+      - "./000-app-vhost.conf:/etc/nginx/conf.d/000-app-vhost.conf"
+      - .zsh_history:/root/.zsh_history
+      - /docker/txd_docker/shared_resources/.zshrc:/root/.zshrc:ro
+      - /docker/txd_docker/shared_resources:/shared_resources:ro
+      - ./supervisor_confs:/etc/supervisor/conf.d/
+      - "./laravel.cron:/opt/laravel.cron"
+      - ../:${SITE_PATH}
+      - ../:/application
+    environment:
+      - CONTAINER_NAME=${CONTAINER_NAME}
+      - SITE_PATH=${SITE_PATH}
+      - TZ=${TZ:-Europe/Rome}
+    env_file:
+      - path: .env.application
+        required: false
+      - path: .pest
+        required: false
+    labels:
+      io.portainer.accesscontrol.teams: ${PORTAINER_TEAM:-txdProd}
+networks:
+  prod_net_rproxy:
+      external: true

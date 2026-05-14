@@ -1,0 +1,6 @@
+*
+!.gitignore
+!docker-compose.yml
+!laravel.cron
+!.env.application.default
+!.pest

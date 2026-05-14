@@ -1,0 +1,3 @@
+## imposta l'esecuzione dei test in parallelo
+## valori ammessi: "--parallel" | ""
+TXD_PEST_PARALLEL_OPTION="--parallel"

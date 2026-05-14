@@ -1,0 +1,4 @@
+SHELL=/bin/bash
+# m h  dom mon dow   command
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+* * * * * root cd "${SITE_PATH:-$(ls -d /var/www/*/ | head -n 1)}" && [ -f txd_docker_prod/cron.enabled ] && php artisan schedule:run > /dev/null 2>&1
