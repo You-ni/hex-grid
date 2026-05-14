@@ -167,7 +167,7 @@ const innerPolygons = computed<string[]>(() => {
 })
 
 const icons = computed(() => {
-    if (!props.tile.generated || !props.tile.resolved) return [];
+    if (!props.tile.generated) return [];
 
     return [
         props.tile.type == 'deposit' ? 'square' : null,
